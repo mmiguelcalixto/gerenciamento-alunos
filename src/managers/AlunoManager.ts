@@ -4,7 +4,11 @@ import { Aluno } from "../models/Aluno";
 import fs from "fs"
 
 export class AlunoManager {
-    private alunos: IAluno[] = [];
+    private dbFile: string = `src/database/database.json`;
+
+    private conteudoDoArquivo = fs.readFileSync(this.dbFile, "utf-8");
+
+    private alunos: IAluno[] = JSON.parse(this.conteudoDoArquivo);
     
     public adicionarAluno(novoAluno: IAluno): void {
         this.alunos.filter((aluno) => {
@@ -13,26 +17,16 @@ export class AlunoManager {
             }
         })
 
-        const dbFile: string = `src/database/database.json`;
-
-        try {
-            const conteudoDoArquivo = fs.readFileSync(dbFile, "utf-8");
-            this.alunos = JSON.parse(conteudoDoArquivo);
-          } catch (erro: any) {
-            if (erro.code !== "ENOENT") {
-              throw erro;
-            }
-        }
-
         this.alunos.push(novoAluno);
 
         const novoConteudo = JSON.stringify(this.alunos, null, 2);
-        fs.writeFileSync(dbFile, novoConteudo, "utf-8");
+        fs.writeFileSync(this.dbFile, novoConteudo, "utf-8");
 
         console.log(`Aluno ${novoAluno.nome} adiconado com sucesso.`);
     }
     
     public listarAlunos(): void {
+        console.log(this.alunos);
         if (this.alunos.length === 0) {
             console.log("Nenhum aluno cadastrado.");
         } else {
