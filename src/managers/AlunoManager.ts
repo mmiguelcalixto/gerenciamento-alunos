@@ -26,7 +26,6 @@ export class AlunoManager {
     }
     
     public listarAlunos(): void {
-        console.log(this.alunos);
         if (this.alunos.length === 0) {
             console.log("Nenhum aluno cadastrado.");
         } else {
@@ -35,5 +34,25 @@ export class AlunoManager {
                 alunoObj.exibirDetalhes();
             })
         }
+    } 
+
+    public async editarAluno(matricula: string, novosDados: IAluno): Promise<void> {
+        let aluno = this.alunos.find(aluno => aluno.matricula  === matricula);
+        console.log(aluno, "---------------------------");
+
+        if (aluno) {
+            aluno = {...novosDados};
+            console.log(aluno, "---------------------------");
+
+            const index = this.alunos.findIndex(a => a.matricula === aluno?.matricula);
+            this.alunos[index] = aluno;
+
+            await this.salvarAlunos();
+        }
+    }
+
+    public async salvarAlunos() {
+        const json = JSON.stringify(this.alunos, null, 2);
+        fs.writeFileSync(this.dbFile, json, "utf-8");
     }
 }

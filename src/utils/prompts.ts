@@ -18,20 +18,14 @@ export async function promptParaDetalhesDoAluno(): Promise<IAluno> {
           },
       },
       {
-          type: "input",
-          name: "nome",
-          message: "Digite o nome: ",
+        type: "input",
+        name: "nome",
+        message: "Digite o nome: ",
       },
       {
-          type: "input",
-          name: "idade",
-          message: "Digite a idade: ",
-          validate: (input: string): boolean | string => {
-            if (input.trim() === "") {
-              return "A matrícula não pode ser vazia";
-            }
-            return true;
-          },
+        type: "input",
+        name: "idade",
+        message: "Digite a idade: ",
       },
   ]
 
@@ -48,6 +42,7 @@ export async function promptMenuPrincipal(): Promise<string> {
         choices: [
           { name: 'Adicionar aluno', value: 'adicionar' },
           { name: 'Listar alunos', value: 'listar' },
+          { name: 'Editar aluno', value: 'editar' },
           { name: 'Sair', value: 'sair' }
         ]
       }

@@ -16,6 +16,11 @@ async function main() {
                 case "listar":
                     manager.listarAlunos();
                     break;
+                case "editar":
+                    await promptParaDetalhesDoAluno().then(
+                        aluno => manager.editarAluno(aluno.matricula, { ...aluno })
+                    )
+                    break;
                 case "sair":
                     sair = true;
                     break;
