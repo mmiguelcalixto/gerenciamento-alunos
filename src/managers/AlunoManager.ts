@@ -10,7 +10,7 @@ export class AlunoManager {
 
     private alunos: IAluno[] = JSON.parse(this.conteudoDoArquivo);
     
-    public adicionarAluno(novoAluno: IAluno): void {
+    public async adicionarAluno(novoAluno: IAluno): Promise<void> {
         this.alunos.filter((aluno) => {
             if (aluno.matricula.toLowerCase() === novoAluno.matricula.toLowerCase()) {
                 throw new Error(`O aluno com matrícula ${novoAluno.matricula} já está cadastrado!`);
@@ -19,8 +19,7 @@ export class AlunoManager {
 
         this.alunos.push(novoAluno);
 
-        const novoConteudo = JSON.stringify(this.alunos, null, 2);
-        fs.writeFileSync(this.dbFile, novoConteudo, "utf-8");
+        await this.salvarAlunos();
 
         console.log(`Aluno ${novoAluno.nome} adiconado com sucesso.`);
     }
@@ -38,21 +37,44 @@ export class AlunoManager {
 
     public async editarAluno(matricula: string, novosDados: IAluno): Promise<void> {
         let aluno = this.alunos.find(aluno => aluno.matricula  === matricula);
-        console.log(aluno, "---------------------------");
 
         if (aluno) {
-            aluno = {...novosDados};
-            console.log(aluno, "---------------------------");
+            if (novosDados.nome === "") novosDados.nome = aluno.nome;
+            if (!novosDados.idade) novosDados.idade = aluno.idade;
 
+            aluno = {...novosDados};
             const index = this.alunos.findIndex(a => a.matricula === aluno?.matricula);
             this.alunos[index] = aluno;
 
             await this.salvarAlunos();
+
+            console.log(`Aluno ${matricula} editado com sucesso.`);
+        } else {
+            throw new Error(`Aluno com matrícula ${matricula} não encontrado`);
         }
     }
 
+    public async deletarAluno(matricula: string): Promise<void> {
+        let aluno = this.alunos.find(aluno => aluno.matricula  === matricula);
+
+        if (aluno) {
+            this.alunos = this.alunos.filter(a => a.matricula !== aluno.matricula);
+
+            await this.salvarAlunos();
+
+            console.log(`Aluno ${matricula} excluído com sucesso.`);
+        } else {
+            throw new Error(`Aluno com matrícula ${matricula} não encontrado`);
+        }
+    }
+
+
     public async salvarAlunos() {
-        const json = JSON.stringify(this.alunos, null, 2);
-        fs.writeFileSync(this.dbFile, json, "utf-8");
+        try {
+            const json = JSON.stringify(this.alunos, null, 2);
+            fs.writeFileSync(this.dbFile, json, "utf-8");
+        } catch (error) {
+            throw error;
+        }
     }
 }

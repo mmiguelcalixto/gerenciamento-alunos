@@ -1,5 +1,5 @@
 import { AlunoManager } from "./managers/AlunoManager";
-import { promptMenuPrincipal, promptParaDetalhesDoAluno } from "./utils/prompts";
+import { promptExcluirAluno, promptMenuPrincipal, promptParaDetalhesDoAluno } from "./utils/prompts";
 
 async function main() {
     const manager = new AlunoManager();
@@ -19,7 +19,10 @@ async function main() {
                 case "editar":
                     await promptParaDetalhesDoAluno().then(
                         aluno => manager.editarAluno(aluno.matricula, { ...aluno })
-                    )
+                    );
+                    break;
+                case "excluir":
+                    await promptExcluirAluno().then(aluno => manager.deletarAluno(aluno.matricula));
                     break;
                 case "sair":
                     sair = true;
